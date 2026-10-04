@@ -1,0 +1,107 @@
+QUESTION 6
+Doubly Linked List: Browser Pages
+
+Develop a C program for a Doubly Linked List representing a sequence of web pages visited by a user. The program should insert a new page, move forward and backward, delete a specified page, and display the pages from first-to-last and last-to-first while handling beginning and end conditions correctly.
+
+C CODE
+========================================================================
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct Node {
+    char page[50];
+    struct Node *prev, *next;
+} Node;
+
+Node *head = NULL, *tail = NULL, *current = NULL;
+
+void visit(const char *name) {
+    Node *n = malloc(sizeof(Node));
+    if (!n) { printf("Memory allocation failed.\\n"); return; }
+    snprintf(n->page, sizeof(n->page), "%s", name);
+    n->prev = tail; n->next = NULL;
+    if (tail) tail->next = n; else head = n;
+    tail = n; current = n;
+    printf("Added page: %s (current page)\\n", current->page);
+}
+
+void forward(void) {
+    if (!current || !current->next) printf("Cannot move forward.\\n");
+    else { current = current->next; printf("Current page: %s\\n", current->page); }
+}
+
+void backward(void) {
+    if (!current || !current->prev) printf("Cannot move backward.\\n");
+    else { current = current->prev; printf("Current page: %s\\n", current->page); }
+}
+
+void deletePage(const char *name) {
+    Node *p = head;
+    while (p && strcmp(p->page, name) != 0) p = p->next;
+    if (!p) { printf("Page not found.\\n"); return; }
+    if (p->prev) p->prev->next = p->next; else head = p->next;
+    if (p->next) p->next->prev = p->prev; else tail = p->prev;
+    if (current == p) current = p->next ? p->next : p->prev;
+    printf("Deleted page: %s\\n", p->page);
+    free(p);
+}
+
+void displayForward(void) {
+    printf("First-to-last: ");
+    for (Node *p = head; p; p = p->next) printf("%s ", p->page);
+    printf("\\n");
+}
+void displayBackward(void) {
+    printf("Last-to-first: ");
+    for (Node *p = tail; p; p = p->prev) printf("%s ", p->page);
+    printf("\\n");
+}
+
+int main(void) {
+    int choice; char name[50];
+    do {
+        printf("\\n1.Add page 2.Forward 3.Backward 4.Delete page 5.Display both ways 6.Exit\\nChoice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1: printf("Enter page name (no spaces): "); scanf("%49s", name); visit(name); break;
+            case 2: forward(); break;
+            case 3: backward(); break;
+            case 4: printf("Enter page name to delete: "); scanf("%49s", name); deletePage(name); break;
+            case 5: displayForward(); displayBackward(); break;
+            case 6: printf("Exiting.\\n"); break;
+            default: printf("Invalid choice.\\n");
+        }
+    } while (choice != 6);
+    while (head) { Node *t = head; head = head->next; free(t); }
+    return 0;
+}
+
+SAMPLE OUTPUT
+========================================================================
+Choice: 1
+Enter page name (no spaces): Home
+Added page: Home (current page)
+
+Choice: 1
+Enter page name (no spaces): Search
+Added page: Search (current page)
+
+Choice: 1
+Enter page name (no spaces): Profile
+Added page: Profile (current page)
+
+Choice: 3
+Current page: Search
+
+Choice: 5
+First-to-last: Home Search Profile
+Last-to-first: Profile Search Home
+
+Choice: 4
+Enter page name to delete: Search
+Deleted page: Search
+
+Choice: 5
+First-to-last: Home Profile
+Last-to-first: Profile Home

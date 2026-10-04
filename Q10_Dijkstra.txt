@@ -1,0 +1,72 @@
+QUESTION 10
+Dijkstra's Shortest Path Algorithm
+
+A transportation network contains cities connected by roads with different costs. Write a C program implementing Dijkstra’s Shortest Path Algorithm that accepts the number of vertices, weighted adjacency matrix and source vertex, computes the minimum distance from the source to every other vertex, and displays each destination with its shortest distance. Test it using at least five vertices.
+
+C CODE
+========================================================================
+#include <stdio.h>
+
+#define MAX 100
+#define INF 1000000000
+
+int main(void) {
+    int n, w[MAX][MAX], dist[MAX], used[MAX] = {0}, source;
+
+    printf("Enter number of vertices: "); scanf("%d", &n);
+    if (n < 1 || n > MAX) { printf("Invalid number of vertices.\\n"); return 1; }
+
+    printf("Enter weighted adjacency matrix (0 means no edge; weights must be non-negative):\\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &w[i][j]);
+            if (w[i][j] < 0) { printf("Dijkstra does not support negative weights.\\n"); return 1; }
+        }
+    }
+
+    printf("Enter source vertex (1-%d): ", n); scanf("%d", &source);
+    if (source < 1 || source > n) { printf("Invalid source vertex.\\n"); return 1; }
+    source--;
+
+    for (int i = 0; i < n; i++) dist[i] = INF;
+    dist[source] = 0;
+
+    for (int count = 0; count < n; count++) {
+        int u = -1, best = INF;
+        for (int i = 0; i < n; i++)
+            if (!used[i] && dist[i] < best) { best = dist[i]; u = i; }
+        if (u == -1) break;
+        used[u] = 1;
+
+        for (int v = 0; v < n; v++) {
+            if (!used[v] && w[u][v] > 0 && dist[u] != INF &&
+                dist[u] + w[u][v] < dist[v]) {
+                dist[v] = dist[u] + w[u][v];
+            }
+        }
+    }
+
+    printf("Shortest distances from vertex %d:\\n", source + 1);
+    for (int i = 0; i < n; i++) {
+        if (dist[i] == INF) printf("To vertex %d: Unreachable\\n", i + 1);
+        else printf("To vertex %d: %d\\n", i + 1, dist[i]);
+    }
+    return 0;
+}
+
+SAMPLE OUTPUT
+========================================================================
+Enter number of vertices: 5
+Enter weighted adjacency matrix (0 means no edge; weights must be non-negative):
+0 10 0 30 100
+10 0 50 0 0
+0 50 0 20 10
+30 0 20 0 60
+100 0 10 60 0
+Enter source vertex (1-5): 1
+Shortest distances from vertex 1:
+To vertex 1: 0
+To vertex 2: 10
+To vertex 3: 50
+To vertex 4: 30
+To vertex 5: 60

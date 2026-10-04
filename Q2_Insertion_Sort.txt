@@ -1,0 +1,57 @@
+QUESTION 2
+Insertion Sort with Passes and Shift Count
+
+A teacher wants to arrange student marks in ascending order and also measure how much rearrangement is necessary. Write a C program using Insertion Sort that accepts n marks, displays the array after every pass, counts the total number of element shifts, and displays the final sorted list and shift count.
+
+C CODE
+========================================================================
+#include <stdio.h>
+
+int main(void) {
+    int n, a[100], shifts = 0;
+
+    printf("Enter number of marks: ");
+    scanf("%d", &n);
+    if (n < 1 || n > 100) {
+        printf("Invalid number of marks. Enter 1 to 100.\n");
+        return 1;
+    }
+
+    printf("Enter %d marks:\n", n);
+    for (int i = 0; i < n; i++)
+        scanf("%d", &a[i]);
+
+    for (int i = 1; i < n; i++) {
+        int key = a[i];
+        int j = i - 1;
+        while (j >= 0 && a[j] > key) {
+            a[j + 1] = a[j];
+            shifts++;
+            j--;
+        }
+        a[j + 1] = key;
+
+        printf("After pass %d: ", i);
+        for (int k = 0; k < n; k++)
+            printf("%d ", a[k]);
+        printf("\n");
+    }
+
+    printf("Sorted marks: ");
+    for (int i = 0; i < n; i++)
+        printf("%d ", a[i]);
+    printf("\nTotal element shifts: %d\n", shifts);
+    return 0;
+}
+
+SAMPLE OUTPUT
+========================================================================
+Enter number of marks: 5
+Enter 5 marks:
+45 20 35 10 30
+After pass 1: 20 45 35 10 30
+After pass 2: 20 35 45 10 30
+After pass 3: 10 20 35 45 30
+After pass 4: 10 20 30 35 45
+Sorted marks: 10 20 30 35 45
+Total element shifts: 7

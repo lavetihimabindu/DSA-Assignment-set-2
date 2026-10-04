@@ -1,0 +1,67 @@
+QUESTION 9
+Graph Traversal using Adjacency Matrix (BFS)
+
+A network of n locations is represented as a graph. Write a C program that accepts the graph using an Adjacency Matrix, accepts a starting vertex, performs a graph traversal, displays the visit order, and ensures that a vertex is not processed repeatedly. Test it with connected and partially connected graphs.
+
+C CODE
+========================================================================
+#include <stdio.h>
+
+#define MAX 100
+
+int main(void) {
+    int n, a[MAX][MAX], visited[MAX] = {0}, queue[MAX];
+    int start, front = 0, rear = 0;
+
+    printf("Enter number of vertices: "); scanf("%d", &n);
+    if (n < 1 || n > MAX) { printf("Invalid number of vertices.\\n"); return 1; }
+
+    printf("Enter adjacency matrix (%d x %d):\\n", n, n);
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            scanf("%d", &a[i][j]);
+
+    printf("Enter starting vertex (1-%d): ", n); scanf("%d", &start);
+    if (start < 1 || start > n) { printf("Invalid starting vertex.\\n"); return 1; }
+    start--;
+
+    visited[start] = 1;
+    queue[rear++] = start;
+    printf("BFS visit order: ");
+    while (front < rear) {
+        int v = queue[front++];
+        printf("%d ", v + 1);
+        for (int i = 0; i < n; i++) {
+            if (a[v][i] != 0 && !visited[i]) {
+                visited[i] = 1;
+                queue[rear++] = i;
+            }
+        }
+    }
+    printf("\\n");
+    printf("Only vertices reachable from the starting vertex are visited.\\n");
+    return 0;
+}
+
+SAMPLE OUTPUT
+========================================================================
+Connected graph test
+Enter number of vertices: 4
+Enter adjacency matrix (4 x 4):
+0 1 1 0
+1 0 0 1
+1 0 0 1
+0 1 1 0
+Enter starting vertex (1-4): 1
+BFS visit order: 1 2 3 4
+
+Partially connected graph test
+Enter number of vertices: 4
+Enter adjacency matrix (4 x 4):
+0 1 0 0
+1 0 0 0
+0 0 0 1
+0 0 1 0
+Enter starting vertex (1-4): 1
+BFS visit order: 1 2
+Only vertices reachable from the starting vertex are visited.
