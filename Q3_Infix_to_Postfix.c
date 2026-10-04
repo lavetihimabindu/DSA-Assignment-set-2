@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAX 200
+
+int precedence(char op) {
+    if (op == '^') return 3;
+    if (op == '*' || op == '/') return 2;
+    if (op == '+' || op == '-') return 1;
+    return 0;
+}
+
+int main(void) {
+    char infix[MAX], postfix[MAX], stack[MAX];
+    int top = -1, j = 0;
+
+    printf("Enter infix expression (single-letter/digit operands): ");
+    if (scanf("%199s", infix) != 1) return 1;
+
+    for (int i = 0; infix[i] != '\0'; i++) {
+        char c = infix[i];
+
+        if (isalnum((unsigned char)c)) {
+            postfix[j++] = c;
+        } else if (c == '(') {
+            stack[++top] = c;
+        } else if (c == ')') {
+            while (top >= 0 && stack[top] != '(')
+                postfix[j++] = stack[top--];
+            if (top < 0) {
+                printf("Error: mismatched parentheses.\n");
+                return 1;
+            }
+            top--;
+        } else if (c == '+' || c == '-' || c == '*' ||
+                   c == '/' || c == '^') {
+            while (top >= 0 && stack[top] != '(' &&
+                   (precedence(stack[top]) > precedence(c) ||
+                   (precedence(stack[top]) == precedence(c) && c != '^'))) {
+                postfix[j++] = stack[top--];
+            }
+            stack[++top] = c;
+        } else {
+            printf("Error: invalid character '%c'.\n", c);
+            return 1;
+        }
+    }
+
+    while (top >= 0) {
+        if (stack[top] == '(') {
+            printf("Error: mismatched parentheses.\n");
+            return 1;
+        }
+        postfix[j++] = stack[top--];
+    }
+    postfix[j] = '\0';
+
+    printf("Postfix expression: %s\n", postfix);
+    return 0;
+}
